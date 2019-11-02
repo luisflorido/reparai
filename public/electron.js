@@ -10,19 +10,18 @@ const {
   let mainWindow;
 
   const createWindow = () => {
-    mainWindow = new BrowserWindow({width: 800, height: 600});
     const startUrl = process.env.ELECTRON_START_URL || url.format({
-      pathname: path.join(__dirname, './index.html'),
+      pathname: path.join(__dirname, '/../build/index.html'),
       protocol: 'file:',
-      slashes: true,
+      slashes: true
     });
+    mainWindow = new BrowserWindow({width: 800, height: 600});
 
     if (process.env.NODE_ENV === 'development') {
       mainWindow.webContents.openDevTools();
     }
-
-    mainWindow.loadURL(startUrl);
-
+    
+  mainWindow.loadURL(startUrl);
     mainWindow.on('closed', () => {
       mainWindow = null;
     });
