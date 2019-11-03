@@ -1,0 +1,5 @@
+export const OPERATIONS = {
+  CHANGE_SIZE_SCREEN: "CHANGE_SIZE_SCREEN",
+  SHOW: "SHOW",
+  HIDE: "HIDE"
+};
