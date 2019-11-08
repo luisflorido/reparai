@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 
-import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { Creators as LoginActions } from "store/ducks/login";
+import { bindActionCreators, compose } from "redux";
+import { withRouter } from "react-router";
+import { Creators as RegisterActions } from "store/ducks/register";
 import PropTypes from "prop-types";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -12,10 +13,12 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Link from "@material-ui/core/Link";
-import Checkbox from "@material-ui/core/Checkbox";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Input from "@material-ui/core/Input";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import { Formik } from "formik";
+import * as Yup from "yup";
 
 import { OPERATIONS } from "store/sagas/entitiesType";
 
@@ -50,12 +53,52 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2)
+  },
+  formControl: {
+    width: "100%"
   }
 }));
 
-const Register = () => {
+const Register = ({ history, register, callRegister }) => {
   const classes = useStyles();
   useEffect(() => ipcRenderer.send(OPERATIONS.SHOW), []);
+
+  const { loading, error, errorStatus } = register;
+
+  useEffect(() => {
+    if (!loading && error !== null) {
+      if (!error) {
+        alert("Registrado com sucesso.");
+        history.push("/login");
+      } else {
+        alert(
+          errorStatus === 409
+            ? "Um usuário com este email já existe."
+            : "Ocorreu um erro! Tente novamente mais tarde."
+        );
+      }
+    }
+  }, [loading, error]);
+
+  const handleFormSubmit = values => {
+    callRegister(values);
+  };
+
+  const schema = Yup.object().shape({
+    name: Yup.string()
+      .min(10)
+      .required("Nome necessário"),
+    email: Yup.string()
+      .email("Digite um email válido")
+      .required("Email necessário."),
+    password: Yup.string()
+      .min(6)
+      .required("Senha necessária."),
+    confirm_password: Yup.string().oneOf(
+      [Yup.ref("password"), null],
+      "Senhas não conferem."
+    )
+  });
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -76,50 +119,106 @@ const Register = () => {
           <Typography component="h1" variant="h5">
             Registrar
           </Typography>
-          <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="E-mail"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Senha"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Lembrar?"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Registrar
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="/login" variant="body2">
-                  Logar
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
+          <Formik
+            className={classes.form}
+            initialValues={{
+              name: "Luis Guilherme",
+              email: "luiisflorido@gmail.com",
+              password: "123456",
+              confirm_password: "123456"
+            }}
+            validationSchema={schema}
+            validateOnChange={false}
+            onSubmit={values => handleFormSubmit(values)}
+          >
+            {({ values, handleChange, handleSubmit, errors }) => (
+              <>
+                <FormControl
+                  className={classes.formControl}
+                  error={!!errors.name}
+                >
+                  <InputLabel htmlFor="component-error">Nome</InputLabel>
+                  <Input
+                    id="component-error"
+                    variant="outlined"
+                    value={values.name}
+                    onChange={handleChange("name")}
+                    fullWidth
+                    aria-describedby="component-error-text"
+                  />
+                  <FormHelperText id="component-error-text">
+                    {errors.name}
+                  </FormHelperText>
+                </FormControl>
+                <FormControl
+                  className={classes.formControl}
+                  error={!!errors.email}
+                >
+                  <InputLabel htmlFor="component-error">Email</InputLabel>
+                  <Input
+                    id="component-error"
+                    variant="outlined"
+                    value={values.email}
+                    onChange={handleChange("email")}
+                    fullWidth
+                    aria-describedby="component-error-text"
+                  />
+                  <FormHelperText id="component-error-text">
+                    {errors.email}
+                  </FormHelperText>
+                </FormControl>
+                <FormControl
+                  className={classes.formControl}
+                  error={!!errors.password}
+                >
+                  <InputLabel htmlFor="component-error">Senha</InputLabel>
+                  <Input
+                    id="component-error"
+                    variant="outlined"
+                    type="password"
+                    value={values.password}
+                    onChange={handleChange("password")}
+                    fullWidth
+                    aria-describedby="component-error-text"
+                  />
+                  <FormHelperText id="component-error-text">
+                    {errors.password}
+                  </FormHelperText>
+                </FormControl>
+                <FormControl
+                  className={classes.formControl}
+                  error={!!errors.confirm_password}
+                >
+                  <InputLabel htmlFor="component-error">
+                    Confirmar senha
+                  </InputLabel>
+                  <Input
+                    id="component-error"
+                    variant="outlined"
+                    type="password"
+                    value={values.confirm_password}
+                    onChange={handleChange("confirm_password")}
+                    fullWidth
+                    aria-describedby="component-error-text"
+                  />
+                  <FormHelperText id="component-error-text">
+                    {errors.confirm_password}
+                  </FormHelperText>
+                </FormControl>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  disabled={loading}
+                  onClick={() => handleSubmit()}
+                  className={classes.submit}
+                >
+                  Registrar
+                </Button>
+              </>
+            )}
+          </Formik>
         </div>
       </Grid>
       <Grid item xs={false} sm={6} md={8} className={classes.image} />
@@ -128,18 +227,22 @@ const Register = () => {
 };
 
 Register.propTypes = {
-  login: PropTypes.object.isRequired,
-  callLogin: PropTypes.func.isRequired
+  register: PropTypes.object.isRequired,
+  callRegister: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  login: state.login
+  register: state.register
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators(LoginActions, dispatch);
+  bindActionCreators(RegisterActions, dispatch);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  ),
+  withRouter
 )(Register);

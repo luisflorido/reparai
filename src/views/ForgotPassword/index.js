@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 
-import { bindActionCreators } from "redux";
+import { bindActionCreators, compose } from "redux";
 import { connect } from "react-redux";
-import { compose } from "redux";
 import { withRouter } from "react-router";
-import { Creators as LoginActions } from "store/ducks/login";
+import { Creators as ForgtoPasswordActions } from "store/ducks/forgotPassword";
 import PropTypes from "prop-types";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -14,8 +13,12 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Input from "@material-ui/core/Input";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import { Formik } from "formik";
+import * as Yup from "yup";
 
 import { OPERATIONS } from "store/sagas/entitiesType";
 
@@ -50,12 +53,42 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2)
+  },
+  formControl: {
+    width: "100%"
   }
 }));
 
-const ForgotPassword = ({ history }) => {
+const ForgotPassword = ({ history, forgotPassword, callForgotPassword }) => {
   const classes = useStyles();
   useEffect(() => ipcRenderer.send(OPERATIONS.SHOW), []);
+
+  const schema = Yup.object().shape({
+    email: Yup.string()
+      .email("Digite um email válido")
+      .required("Email necessário")
+  });
+
+  const handleFormSubmit = values => {
+    callForgotPassword(values);
+  };
+
+  const { loading, error, errorStatus } = forgotPassword;
+
+  useEffect(() => {
+    if (!loading && error !== null) {
+      if (!error) {
+        alert("Email enviado com sucesso!");
+        history.push("/login");
+      } else {
+        alert(
+          errorStatus === 404
+            ? "Usuário inválido."
+            : "Ocorreu um erro! Tente novamente mais tarde."
+        );
+      }
+    }
+  }, [loading, error]);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -74,42 +107,50 @@ const ForgotPassword = ({ history }) => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Login
+            Esqueceu sua senha
           </Typography>
-          <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="E-mail"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Enviar email
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link onClick={() => history.push("/login")} variant="body2">
-                  Logar
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link onClick={() => history.push("/register")} variant="body2">
-                  Não tem uma conta?
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
+          <Formik
+            className={classes.form}
+            initialValues={{
+              email: "luiisflorido@gmail.com"
+            }}
+            validationSchema={schema}
+            validateOnChange={false}
+            onSubmit={values => handleFormSubmit(values)}
+          >
+            {({ values, handleChange, handleSubmit, errors }) => (
+              <>
+                <FormControl
+                  className={classes.formControl}
+                  error={!!errors.email}
+                >
+                  <InputLabel htmlFor="component-error">Email</InputLabel>
+                  <Input
+                    id="component-error"
+                    variant="outlined"
+                    value={values.email}
+                    onChange={handleChange("email")}
+                    fullWidth
+                    aria-describedby="component-error-text"
+                  />
+                  <FormHelperText id="component-error-text">
+                    {errors.email}
+                  </FormHelperText>
+                </FormControl>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  disabled={loading}
+                  onClick={() => handleSubmit()}
+                  className={classes.submit}
+                >
+                  Entrar
+                </Button>
+              </>
+            )}
+          </Formik>
         </div>
       </Grid>
       <Grid item xs={false} sm={6} md={8} className={classes.image} />
@@ -118,17 +159,17 @@ const ForgotPassword = ({ history }) => {
 };
 
 ForgotPassword.propTypes = {
-  login: PropTypes.object.isRequired,
-  callLogin: PropTypes.func.isRequired,
+  forgotPassword: PropTypes.object.isRequired,
+  callForgotPassword: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  login: state.login
+  forgotPassword: state.forgotPassword
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators(LoginActions, dispatch);
+  bindActionCreators(ForgtoPasswordActions, dispatch);
 
 export default compose(
   connect(

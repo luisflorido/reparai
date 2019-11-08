@@ -1,24 +1,42 @@
 export const Types = {
   LOGIN: "LOGIN/LOGIN",
   SUCCESS: "LOGIN/SUCCESS",
-  FAIL: "LOGIN/FAIL"
+  FAIL: "LOGIN/FAIL",
+  LOGOUT: "LOGIN/LOGOUT"
 };
 
 const INITIAL_STATE = {
   loading: false,
   error: null,
-  data: null
+  errorStatus: null,
+  data: localStorage.getItem("data")
 };
 
 export default function Login(state = INITIAL_STATE, action) {
-  const { LOGIN, SUCCESS, FAIL } = Types;
+  const { LOGIN, SUCCESS, FAIL, LOGOUT } = Types;
   switch (action.type) {
     case LOGIN:
       return { ...state, loading: true, error: null };
     case SUCCESS:
-      return { ...state, loading: false, error: false, data: action.payload };
+      localStorage.setItem("data", JSON.stringify(action.payload));
+      return {
+        ...state,
+        loading: false,
+        error: false,
+        data: localStorage.getItem("data")
+      };
     case FAIL:
-      return { ...state, loading: false, error: true };
+      localStorage.removeItem("data");
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        errorStatus: action.payload,
+        data: localStorage.getItem("data")
+      };
+    case LOGOUT:
+      localStorage.removeItem("data");
+      return { ...state, data: localStorage.getItem("data") };
     default:
       return state;
   }
@@ -29,11 +47,15 @@ export const Creators = {
     type: Types.LOGIN,
     payload
   }),
+  callLogout: () => ({
+    type: Types.LOGOUT
+  }),
   loginSuccess: payload => ({
     type: Types.SUCCESS,
     payload
   }),
-  loginFail: () => ({
-    type: Types.FAIL
+  loginFail: payload => ({
+    type: Types.FAIL,
+    payload
   })
 };

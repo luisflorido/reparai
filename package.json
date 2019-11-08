@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "main": "public/electron.js",
+  "homepage": "./",
   "dependencies": {
     "@material-ui/core": "^4.5.2",
     "@material-ui/icons": "^4.5.1",
+    "axios": "^0.19.0",
     "eslint": "^6.6.0",
+    "formik": "^2.0.3",
     "history": "^4.10.1",
     "prop-types": "^15.7.2",
     "react": "^16.11.0",
@@ -21,7 +24,8 @@
     "redux": "^4.0.4",
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.1.1",
-    "styled-components": "^4.4.1"
+    "styled-components": "^4.4.1",
+    "yup": "^0.27.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -30,7 +34,30 @@
     "electron-dev": "node public/electron-wait",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.reparai",
+    "mac": {
+      "category": ""
+    },
+    "protocols": [
+      {
+        "name": "reparai-protocol",
+        "schemes": [
+          "reparai"
+        ]
+      }
+    ],
+    "files": [ "!node_modules"]
+  },
+  "win": {
+    "target": "nsis"
+  },
+  "nsis": {
+    "perMachine": true
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -49,6 +76,7 @@
   },
   "devDependencies": {
     "electron": "^7.0.1",
+    "electron-builder": "^22.1.0",
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.16.0",

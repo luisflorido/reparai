@@ -18,7 +18,9 @@ import Login from "views/Login";
 import ForgotPassword from "views/ForgotPassword";
 import Register from "views/Register";
 
-const history = createBrowserHistory();
+const history = createBrowserHistory({
+  basename: window.location.pathname
+});
 
 const theme = createMuiTheme({
   palette: {
@@ -33,7 +35,7 @@ const theme = createMuiTheme({
     }
   }
 });
-console.tron.log(theme);
+
 const Wrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.primary};
 `;

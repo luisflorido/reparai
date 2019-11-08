@@ -13,8 +13,6 @@ const reactotronConfigure = () => {
 
   if (__DEV__) {
     console.tron = tron;
-  } else {
-    console.tron.log = (...rest) => console.log(...rest);
   }
 
   tron.clear();

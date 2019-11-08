@@ -13,7 +13,7 @@ reactotronConfigure();
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: []
+  blacklist: ["login", "register", "forgotPassword"]
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducers);

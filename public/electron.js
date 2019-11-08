@@ -1,7 +1,8 @@
-const { BrowserWindow, app, ipcMain } = require("electron");
+const { BrowserWindow, app, ipcMain, protocol } = require("electron");
 
 const path = require("path");
 const url = require("url");
+const PROTOCOL_CODE = "reparai";
 
 let mainWindow;
 
@@ -19,12 +20,19 @@ const createWindow = () => {
       protocol: "file:",
       slashes: true
     });
+
   mainWindow = new BrowserWindow({
-    show: false,
+    show: true,
     webPreferences: {
       nodeIntegration: true
     }
   });
+
+  // protocol.registerHttpProtocol(PROTOCOL_CODE, (req, cb) => {
+  //   const fullUrl = req.url;
+  //   console.log(fullUrl);
+  //   mainWindow.loadURL(fullUrl);
+  // });
 
   if (process.env.NODE_ENV === "development") {
     mainWindow.webContents.openDevTools();
@@ -52,6 +60,16 @@ app.on("activate", () => {
   }
 });
 
+let link;
+
+app.on("open-url", function(event, data) {
+  event.preventDefault();
+  link = data;
+  alert(link);
+});
+
+app.setAsDefaultProtocolClient("reparai");
+
 ipcMain.on(OPERATIONS.CHANGE_SIZE_SCREEN, (event, width, height) => {
   mainWindow.setSize(width, height);
   mainWindow.center();
@@ -64,3 +82,5 @@ ipcMain.on(OPERATIONS.SHOW, () => {
 ipcMain.on(OPERATIONS.HIDE, () => {
   mainWindow.hide();
 });
+
+module.exports.getLink = link;
