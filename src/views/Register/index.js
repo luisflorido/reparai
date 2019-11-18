@@ -63,19 +63,12 @@ const Register = ({ history, register, callRegister }) => {
   const classes = useStyles();
   useEffect(() => ipcRenderer.send(OPERATIONS.SHOW), []);
 
-  const { loading, error, errorStatus } = register;
+  const { loading, error } = register;
 
   useEffect(() => {
     if (!loading && error !== null) {
       if (!error) {
-        alert("Registrado com sucesso.");
         history.push("/login");
-      } else {
-        alert(
-          errorStatus === 409
-            ? "Um usuário com este email já existe."
-            : "Ocorreu um erro! Tente novamente mais tarde."
-        );
       }
     }
   }, [loading, error]);

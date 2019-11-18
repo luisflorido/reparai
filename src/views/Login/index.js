@@ -79,19 +79,12 @@ const Login = ({ history, login, callLogin }) => {
     callLogin(values);
   };
 
-  const { loading, error, errorStatus } = login;
+  const { loading, error } = login;
 
   useEffect(() => {
     if (!loading && error !== null) {
       if (!error) {
-        alert("Logado com sucesso.");
         history.push("/");
-      } else {
-        alert(
-          errorStatus === 401
-            ? "Usuário ou senha inválidos."
-            : "Ocorreu um erro! Tente novamente mais tarde."
-        );
       }
     }
   }, [loading, error]);
@@ -119,7 +112,7 @@ const Login = ({ history, login, callLogin }) => {
             className={classes.form}
             initialValues={{
               email: "luiisflorido@gmail.com",
-              password: "123456"
+              password: "123456ab"
             }}
             validationSchema={schema}
             validateOnChange={false}

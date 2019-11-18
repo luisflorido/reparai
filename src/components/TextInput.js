@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import FormControl from "@material-ui/core/FormControl";
@@ -17,16 +17,18 @@ const TextInput = ({ name, error, errorMsg, text }) => {
   const classes = useStyles();
   const [value, setValue] = useState();
   text = value;
-  return (<FormControl className={classes.formControl} error={error}>
-    <InputLabel htmlFor="component-error">{name}</InputLabel>
-    <Input
-      id="component-error"
-      value={value}
-      onChange={value => setValue(value.text)}
-      aria-describedby="component-error-text"
-    />
-    <FormHelperText id="component-error-text">{errorMsg}</FormHelperText>
-  </FormControl>);
+  return (
+    <FormControl className={classes.formControl} error={error}>
+      <InputLabel htmlFor="component-error">{name}</InputLabel>
+      <Input
+        id="component-error"
+        value={value}
+        onChange={value => setValue(value.text)}
+        aria-describedby="component-error-text"
+      />
+      <FormHelperText id="component-error-text">{errorMsg}</FormHelperText>
+    </FormControl>
+  );
 };
 
 TextInput.propTypes = {

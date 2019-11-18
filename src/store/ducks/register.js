@@ -7,7 +7,6 @@ export const Types = {
 const INITIAL_STATE = {
   loading: false,
   error: null,
-  errorStatus: null,
   data: null
 };
 
@@ -22,8 +21,7 @@ export default function Register(state = INITIAL_STATE, action) {
       return {
         ...state,
         loading: false,
-        error: true,
-        errorStatus: action.payload
+        error: true
       };
     default:
       return state;
@@ -39,8 +37,7 @@ export const Creators = {
     type: Types.SUCCESS,
     payload
   }),
-  registerFail: payload => ({
-    type: Types.FAIL,
-    payload
+  registerFail: () => ({
+    type: Types.FAIL
   })
 };

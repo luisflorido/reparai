@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage";
 
 import rootReducers from "./ducks";
 import rootSagas from "./sagas";
+import api from "services";
 
 import reactotronConfigure from "config";
 import createSagaMiddleware from "redux-saga";
@@ -13,7 +14,7 @@ reactotronConfigure();
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ["login", "register", "forgotPassword"]
+  blacklist: ["login", "register", "forgotPassword", "device", "toast"]
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducers);
@@ -39,5 +40,7 @@ const store = createStore(persistedReducer, composer);
 const persistor = persistStore(store);
 
 sagaMiddleware.run(rootSagas);
+
+api.setupInterceptor(store);
 
 export { store, persistor };

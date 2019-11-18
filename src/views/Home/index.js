@@ -11,13 +11,15 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import makeStyles from "@material-ui/styles/makeStyles";
 
-const Home = ({ login, history }) => {
-  const { getLink } = window.require("electron").remote.require("./electron");
-  console.log("get", getLink);
-  console.log("get", JSON.stringify(getLink));
+import Loading from "components/Loading";
 
+import { OPERATIONS } from "store/sagas/entitiesType";
+const { ipcRenderer } = window.require("electron");
+
+const Home = ({ login, history, categoryLoading, locationLoading }) => {
   const { error, data } = login;
 
+  useEffect(() => ipcRenderer.send(OPERATIONS.CHANGE_SIZE_SCREEN, 80, 80), []);
   useEffect(() => {
     if (data === null) {
       history.push("/login");
@@ -29,7 +31,6 @@ const Home = ({ login, history }) => {
       margin: 0,
       padding: 0,
       width: "100%",
-      height: "100vh",
       backgroundColor: theme.palette.background.default
     },
     paper: {
@@ -62,17 +63,27 @@ const Home = ({ login, history }) => {
           ))}
         </Grid>
       </Grid>
+      <Loading loading={!!categoryLoading && !!locationLoading} />
     </Grid>
   );
 };
 
 const mapStateToProps = state => ({
-  login: state.login
+  login: state.login,
+  categoryLoading: state.category.loading,
+  locationLoading: state.location.loading
 });
 
 Home.propTypes = {
   login: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  categoryLoading: PropTypes.bool,
+  locationLoading: PropTypes.bool
+};
+
+Home.defaultProps = {
+  categoryLoading: false,
+  locationLoading: false
 };
 
 export default compose(

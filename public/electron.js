@@ -1,8 +1,7 @@
-const { BrowserWindow, app, ipcMain, protocol } = require("electron");
+const { BrowserWindow, app, ipcMain, screen } = require("electron");
 
 const path = require("path");
 const url = require("url");
-const PROTOCOL_CODE = "reparai";
 
 let mainWindow;
 
@@ -10,6 +9,16 @@ const OPERATIONS = {
   CHANGE_SIZE_SCREEN: "CHANGE_SIZE_SCREEN",
   SHOW: "SHOW",
   HIDE: "HIDE"
+};
+
+const wpd = w => {
+  var { width } = screen.getPrimaryDisplay().workAreaSize;
+  return (w * width) / 100;
+};
+
+const hpd = h => {
+  var { height } = screen.getPrimaryDisplay().workAreaSize;
+  return (h * height) / 100;
 };
 
 const createWindow = () => {
@@ -71,7 +80,7 @@ app.on("open-url", function(event, data) {
 app.setAsDefaultProtocolClient("reparai");
 
 ipcMain.on(OPERATIONS.CHANGE_SIZE_SCREEN, (event, width, height) => {
-  mainWindow.setSize(width, height);
+  mainWindow.setSize(wpd(width), hpd(height));
   mainWindow.center();
 });
 

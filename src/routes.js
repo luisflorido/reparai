@@ -7,18 +7,27 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Router, Switch, Route } from "react-router-dom";
 import { createBrowserHistory } from "history";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
+import ReduxToastr from "react-redux-toastr";
 
 import { store, persistor } from "store";
 import Styles from "styles";
 import "styles/global.css";
 
+import Drawer from "components/Drawer";
+import PrivateRoute from "components/PrivateRoute";
 import Home from "views/Home";
+import Users from "views/Users";
+import Categories from "views/Categories";
+import AddCategory from "views/Categories/Add";
+import Locations from "views/Locations";
+import AddLocation from "views/Locations/Add";
+import Devices from "views/Devices";
+import AddDevice from "views/Devices/Add";
 import Login from "views/Login";
 import ForgotPassword from "views/ForgotPassword";
 import Register from "views/Register";
 
-const history = createBrowserHistory({
+export const history = createBrowserHistory({
   basename: window.location.pathname
 });
 
@@ -49,26 +58,55 @@ const Routes = () => (
             <Router history={history}>
               <Route
                 render={({ location }) => (
-                  <TransitionGroup>
-                    <CSSTransition
-                      key={location.key}
-                      timeout={250}
-                      classNames="fade"
-                    >
-                      <Switch location={location}>
-                        <Route path="/" exact component={Home} />
-                        <Route
-                          path="/forgot-password"
-                          component={ForgotPassword}
-                        />
-                        <Route path="/register" component={Register} />
-                        <Route path="/login" component={Login} />
-                      </Switch>
-                    </CSSTransition>
-                  </TransitionGroup>
+                  <Switch location={location}>
+                    <Route path="/register" component={Register} />
+                    <Route path="/login" component={Login} />
+                    <Route path="/forgot-password" component={ForgotPassword} />
+                    <Drawer>
+                      <PrivateRoute path="/" exact component={Home} />
+                      <PrivateRoute path="/users" exact component={Users} />
+                      <PrivateRoute
+                        path="/categories"
+                        exact
+                        component={Categories}
+                      />
+                      <PrivateRoute
+                        path="/categories/add"
+                        exact
+                        component={AddCategory}
+                      />
+                      <PrivateRoute
+                        path="/locations"
+                        exact
+                        component={Locations}
+                      />
+                      <PrivateRoute
+                        path="/locations/add"
+                        exact
+                        component={AddLocation}
+                      />
+                      <PrivateRoute path="/devices" exact component={Devices} />
+                      <PrivateRoute
+                        path="/devices/add"
+                        exact
+                        component={AddDevice}
+                      />
+                    </Drawer>
+                  </Switch>
                 )}
               />
             </Router>
+            <ReduxToastr
+              timeOut={4000}
+              newestOnTop={false}
+              preventDuplicates
+              position="top-right"
+              getState={state => state.toast}
+              transitionIn="fadeIn"
+              transitionOut="fadeOut"
+              progressBar
+              closeOnToastrClick
+            />
           </PersistGate>
         </Provider>
       </Wrapper>

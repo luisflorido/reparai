@@ -8,7 +8,6 @@ export const Types = {
 const INITIAL_STATE = {
   loading: false,
   error: null,
-  errorStatus: null,
   data: localStorage.getItem("data")
 };
 
@@ -31,7 +30,6 @@ export default function Login(state = INITIAL_STATE, action) {
         ...state,
         loading: false,
         error: true,
-        errorStatus: action.payload,
         data: localStorage.getItem("data")
       };
     case LOGOUT:
@@ -54,8 +52,7 @@ export const Creators = {
     type: Types.SUCCESS,
     payload
   }),
-  loginFail: payload => ({
-    type: Types.FAIL,
-    payload
+  loginFail: () => ({
+    type: Types.FAIL
   })
 };
