@@ -28,6 +28,10 @@ import {
   Creators as DeviceActions,
   Types as DeviceTypes
 } from "store/ducks/device";
+import {
+  Creators as ServiceActions,
+  Types as ServiceTypes
+} from "store/ducks/service";
 
 function* login(action) {
   const { email, password } = action.payload;
@@ -261,6 +265,19 @@ function* deleteDevice(payload) {
   }
 }
 
+function* getService() {
+  try {
+    const response = yield call(api.get, "/services");
+    const { status, data } = response;
+    if (status && status === 200) {
+      yield put(ServiceActions.serviceSuccess({ data }));
+    }
+  } catch (err) {
+    toastr.error("Erro ao obter serviços", "Falha ao contactar os servidores.");
+    yield put(ServiceActions.serviceFail());
+  }
+}
+
 function* loadAllCategories() {
   try {
     const response = yield call(api.get, "/categories");
@@ -305,6 +322,7 @@ export default function* rootSaga() {
     takeLatest(DeviceTypes.GET, getDevice),
     takeLatest(DeviceTypes.ADD, addDevice),
     takeLatest(DeviceTypes.DELETE, deleteDevice),
+    takeLatest(ServiceTypes.GET, getService),
     fork(loadAll)
   ]);
 }

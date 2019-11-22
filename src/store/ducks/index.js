@@ -7,6 +7,7 @@ import forgotPassword from "./forgotPassword";
 import category from "./category";
 import location from "./location";
 import device from "./device";
+import service from "./service";
 
 const reducers = combineReducers({
   toast: toastrReducer,
@@ -15,7 +16,8 @@ const reducers = combineReducers({
   forgotPassword,
   category,
   location,
-  device
+  device,
+  service
 });
 
 export default reducers;
