@@ -41,7 +41,7 @@ function* login(action) {
     const { status, data } = response;
     if (status && status === 200) {
       toastr.success("Sucesso", "Logado com sucesso!");
-      yield put(LoginActions.loginSuccess(data.data));
+      yield put(LoginActions.loginSuccess(data));
     }
   } catch (err) {
     toastr.error(
