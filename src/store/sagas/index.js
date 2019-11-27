@@ -278,6 +278,77 @@ function* getService() {
   }
 }
 
+function* getServiceById({ id }) {
+  try {
+    const response = yield call(api.get, `/services/${id.id}`);
+    const { status, data } = response;
+    if (status && status === 200) {
+      yield put(ServiceActions.serviceSuccess({ service: data.service }));
+    }
+  } catch (err) {
+    toastr.error("Erro ao obter serviço", "Falha ao contactar os servidores.");
+    yield put(ServiceActions.serviceFail());
+  }
+}
+
+function* addService(payload) {
+  try {
+    const response = yield call(api.post, "/services", payload.payload);
+    const { status } = response;
+    if (status && status === 200) {
+      toastr.success("Sucesso", "Pedido de serviço criado com sucesso.");
+      yield put(ServiceActions.serviceSuccess());
+      setTimeout(() => history.push("/services"), 2500);
+    }
+  } catch (err) {
+    toastr.error("Erro", "Falha ao contactar os servidores.");
+    yield put(ServiceActions.serviceFail());
+  }
+}
+
+function* sendMessage(payload) {
+  try {
+    const { id, text } = payload.payload;
+    const response = yield call(api.post, `/services/${id}/message`, { text });
+    const { status } = response;
+    if (status && status === 200) {
+      toastr.success("Sucesso", "Mensagem enviada com sucesso.");
+      yield put(ServiceActions.serviceSuccess());
+      setTimeout(() => {
+        history.replace("/");
+        history.replace("/services");
+        history.replace(`/services/messages/${id}`);
+      }, 2500);
+    }
+  } catch (err) {
+    toastr.error("Erro", "Falha ao contactar os servidores.");
+    yield put(ServiceActions.serviceFail());
+  }
+}
+
+function* deleteService(payload) {
+  try {
+    const response = yield call(api.delete, `/services/${payload.payload}`);
+    const { status } = response;
+    if (status && status === 200) {
+      toastr.success("Sucesso", "Pedido de serviço arquivado com sucesso.");
+      yield put(ServiceActions.serviceSuccess());
+      setTimeout(() => {
+        history.replace("/");
+        history.replace("/services");
+      }, 2500);
+    }
+  } catch (err) {
+    toastr.error(
+      "Erro",
+      err && err.response && err.response.status && err.response.status === 404
+        ? "Serviço inválido."
+        : "Falha ao contactar os servidores."
+    );
+    yield put(ServiceActions.deviceFail());
+  }
+}
+
 function* loadAllCategories() {
   try {
     const response = yield call(api.get, "/categories");
@@ -304,12 +375,30 @@ function* loadAllLocations() {
   }
 }
 
+function* loadAllDevices() {
+  try {
+    const response = yield call(api.get, "/devices");
+    const { status, data } = response;
+    if (status && status === 200) {
+      yield put(DeviceActions.deviceSuccess({ data }));
+    }
+  } catch (err) {
+    toastr.error("Erro ao carregar localizações");
+    yield put(DeviceActions.deviceFail());
+  }
+}
+
 function* loadAll() {
-  yield all([call(loadAllCategories), call(loadAllLocations)]);
+  yield all([
+    call(loadAllCategories),
+    call(loadAllLocations),
+    call(loadAllDevices)
+  ]);
 }
 
 export default function* rootSaga() {
   yield all([
+    takeLatest(LoginTypes.LOAD, loadAll),
     takeLatest(LoginTypes.LOGIN, login),
     takeLatest(RegisterTypes.REGISTER, register),
     takeLatest(ForgotPasswordTypes.FORGOT_PASSWORD, forgotPassword),
@@ -323,6 +412,9 @@ export default function* rootSaga() {
     takeLatest(DeviceTypes.ADD, addDevice),
     takeLatest(DeviceTypes.DELETE, deleteDevice),
     takeLatest(ServiceTypes.GET, getService),
-    fork(loadAll)
+    takeLatest(ServiceTypes.GET_BY_ID, getServiceById),
+    takeLatest(ServiceTypes.ADD, addService),
+    takeLatest(ServiceTypes.SEND_MESSAGE, sendMessage),
+    takeLatest(ServiceTypes.DELETE, deleteService)
   ]);
 }

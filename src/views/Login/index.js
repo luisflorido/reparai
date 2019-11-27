@@ -84,7 +84,7 @@ const Login = ({ history, login, callLogin }) => {
   useEffect(() => {
     if (!loading && error !== null) {
       if (!error) {
-        history.push("/");
+        history.push("/services");
       }
     }
   }, [loading, error]);

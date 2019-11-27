@@ -9,6 +9,8 @@ import Person from "@material-ui/icons/Person";
 import Category from "@material-ui/icons/LocalOffer";
 import Locations from "@material-ui/icons/MyLocation";
 import Devices from "@material-ui/icons/Devices";
+import Logout from "@material-ui/icons/ExitToApp";
+import Assignment from "@material-ui/icons/Assignment";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -91,6 +93,16 @@ function ResponsiveDrawer(props) {
       <List>
         <ListItem
           button
+          className={isInPath("/services") && classes.selected}
+          onClick={() => !equalsPath("/services") && history.push("/services")}
+        >
+          <ListItemIcon>
+            <Assignment />
+          </ListItemIcon>
+          <ListItemText primary="Serviços" />
+        </ListItem>
+        <ListItem
+          button
           className={isInPath("/users") && classes.selected}
           onClick={() => !equalsPath("/users") && history.push("/users")}
         >
@@ -135,6 +147,18 @@ function ResponsiveDrawer(props) {
         </ListItem>
       </List>
       <Divider />
+      <ListItem
+        button
+        onClick={() => {
+          localStorage.removeItem("data");
+          window.location.reload();
+        }}
+      >
+        <ListItemIcon>
+          <Logout />
+        </ListItemIcon>
+        <ListItemText primary="Deslogar" />
+      </ListItem>
     </div>
   );
 

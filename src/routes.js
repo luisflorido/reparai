@@ -5,7 +5,7 @@ import styled, { ThemeProvider } from "styled-components";
 
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { Router, Switch, Route } from "react-router-dom";
+import { Router, Switch, Route, Redirect } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import ReduxToastr from "react-redux-toastr";
 
@@ -26,6 +26,9 @@ import AddDevice from "views/Devices/Add";
 import Login from "views/Login";
 import ForgotPassword from "views/ForgotPassword";
 import Register from "views/Register";
+import Services from "views/Services";
+import AddService from "views/Services/Add";
+import MessagesService from "views/Services/Messages";
 
 export const history = createBrowserHistory({
   basename: window.location.pathname
@@ -62,8 +65,23 @@ const Routes = () => (
                     <Route path="/register" component={Register} />
                     <Route path="/login" component={Login} />
                     <Route path="/forgot-password" component={ForgotPassword} />
+                    <Route path="/" exact component={Home} />
                     <Drawer>
-                      <PrivateRoute path="/" exact component={Home} />
+                      <PrivateRoute
+                        path="/services"
+                        exact
+                        component={Services}
+                      />
+                      <PrivateRoute
+                        path="/services/add"
+                        exact
+                        component={AddService}
+                      />
+                      <PrivateRoute
+                        path="/services/messages/:id"
+                        exact
+                        component={MessagesService}
+                      />
                       <PrivateRoute path="/users" exact component={Users} />
                       <PrivateRoute
                         path="/categories"

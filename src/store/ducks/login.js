@@ -2,7 +2,8 @@ export const Types = {
   LOGIN: "LOGIN/LOGIN",
   SUCCESS: "LOGIN/SUCCESS",
   FAIL: "LOGIN/FAIL",
-  LOGOUT: "LOGIN/LOGOUT"
+  LOGOUT: "LOGIN/LOGOUT",
+  LOAD: "LOGIN/LOAD_ALL"
 };
 
 const INITIAL_STATE = {
@@ -12,8 +13,10 @@ const INITIAL_STATE = {
 };
 
 export default function Login(state = INITIAL_STATE, action) {
-  const { LOGIN, SUCCESS, FAIL, LOGOUT } = Types;
+  const { LOGIN, SUCCESS, FAIL, LOGOUT, LOAD } = Types;
   switch (action.type) {
+    case LOAD:
+      return { ...state };
     case LOGIN:
       return { ...state, loading: true, error: null };
     case SUCCESS:
@@ -54,5 +57,8 @@ export const Creators = {
   }),
   loginFail: () => ({
     type: Types.FAIL
+  }),
+  loadAll: () => ({
+    type: Types.LOAD
   })
 };
