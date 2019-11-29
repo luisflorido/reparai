@@ -1,62 +1,65 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
-import { connect } from "react-redux";
-import { bindActionCreators, compose } from "redux";
-import { withRouter } from "react-router";
-import { Creators as RegisterActions } from "store/ducks/register";
-import PropTypes from "prop-types";
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
+import { withRouter } from 'react-router';
+import { Creators as RegisterActions } from 'store/ducks/register';
+import PropTypes from 'prop-types';
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import Avatar from "@material-ui/core/Avatar";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import { Formik } from "formik";
-import * as Yup from "yup";
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-import { OPERATIONS } from "store/sagas/entitiesType";
+import { OPERATIONS } from 'store/sagas/entitiesType';
 
-const { ipcRenderer } = window.require("electron");
+const { ipcRenderer } = window.require('electron');
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: "100vh"
+    height: '100vh',
   },
   image: {
-    backgroundImage: "url(https://source.unsplash.com/random)",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
-    backgroundPosition: "center"
+    backgroundImage: 'url(https://source.unsplash.com/random)',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
   },
   paperBackground: {
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
   },
   paper: {
     margin: theme.spacing(8, 4),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main
+    backgroundColor: theme.palette.primary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
+    margin: theme.spacing(3, 0, 2),
   },
   formControl: {
-    width: "100%"
-  }
+    width: '100%',
+  },
+  container: {
+    marginTop: theme.spacing(1),
+  },
 }));
 
 const Register = ({ history, register, callRegister }) => {
@@ -68,7 +71,7 @@ const Register = ({ history, register, callRegister }) => {
   useEffect(() => {
     if (!loading && error !== null) {
       if (!error) {
-        history.push("/login");
+        history.push('/login');
       }
     }
   }, [loading, error]);
@@ -78,19 +81,22 @@ const Register = ({ history, register, callRegister }) => {
   };
 
   const schema = Yup.object().shape({
-    name: Yup.string()
-      .min(10)
-      .required("Nome necessário"),
+    first_name: Yup.string()
+      .min(4)
+      .required('Nome necessário'),
+    last_name: Yup.string()
+      .min(4)
+      .required('Sobrenome necessário'),
     email: Yup.string()
-      .email("Digite um email válido")
-      .required("Email necessário."),
+      .email('Digite um email válido')
+      .required('Email necessário.'),
     password: Yup.string()
       .min(6)
-      .required("Senha necessária."),
+      .required('Senha necessária.'),
     confirm_password: Yup.string().oneOf(
-      [Yup.ref("password"), null],
-      "Senhas não conferem."
-    )
+      [Yup.ref('password'), null],
+      'Senhas não conferem.'
+    ),
   });
 
   return (
@@ -99,7 +105,7 @@ const Register = ({ history, register, callRegister }) => {
         item
         xs={12}
         sm={6}
-        md={4}
+        md={6}
         component={Paper}
         elevation={6}
         square
@@ -115,10 +121,11 @@ const Register = ({ history, register, callRegister }) => {
           <Formik
             className={classes.form}
             initialValues={{
-              name: "Luis Guilherme",
-              email: "luiisflorido@gmail.com",
-              password: "123456",
-              confirm_password: "123456"
+              first_name: 'Luis',
+              last_name: 'Guilherme',
+              email: 'luiisflorido@gmail.com',
+              password: '123456',
+              confirm_password: '123456',
             }}
             validationSchema={schema}
             validateOnChange={false}
@@ -126,23 +133,52 @@ const Register = ({ history, register, callRegister }) => {
           >
             {({ values, handleChange, handleSubmit, errors }) => (
               <>
-                <FormControl
-                  className={classes.formControl}
-                  error={!!errors.name}
+                <Grid
+                  container
+                  justify="space-between"
+                  className={classes.container}
                 >
-                  <InputLabel htmlFor="component-error">Nome</InputLabel>
-                  <Input
-                    id="component-error"
-                    variant="outlined"
-                    value={values.name}
-                    onChange={handleChange("name")}
-                    fullWidth
-                    aria-describedby="component-error-text"
-                  />
-                  <FormHelperText id="component-error-text">
-                    {errors.name}
-                  </FormHelperText>
-                </FormControl>
+                  <Grid xs={5}>
+                    <FormControl
+                      className={classes.formControl}
+                      error={!!errors.first_name}
+                    >
+                      <InputLabel htmlFor="component-error">Nome</InputLabel>
+                      <Input
+                        id="component-error"
+                        variant="outlined"
+                        value={values.first_name}
+                        onChange={handleChange('first_name')}
+                        fullWidth
+                        aria-describedby="component-error-text"
+                      />
+                      <FormHelperText id="component-error-text">
+                        {errors.first_name}
+                      </FormHelperText>
+                    </FormControl>
+                  </Grid>
+                  <Grid xs={5}>
+                    <FormControl
+                      className={classes.formControl}
+                      error={!!errors.last_name}
+                    >
+                      <InputLabel htmlFor="component-error">
+                        Sobrenome
+                      </InputLabel>
+                      <Input
+                        id="component-error"
+                        variant="outlined"
+                        value={values.last_name}
+                        onChange={handleChange('last_name')}
+                        fullWidth
+                        aria-describedby="component-error-text"
+                      />
+                      <FormHelperText id="component-error-text">
+                        {errors.last_name}
+                      </FormHelperText>
+                    </FormControl>
+                  </Grid>
+                </Grid>
                 <FormControl
                   className={classes.formControl}
                   error={!!errors.email}
@@ -152,7 +188,7 @@ const Register = ({ history, register, callRegister }) => {
                     id="component-error"
                     variant="outlined"
                     value={values.email}
-                    onChange={handleChange("email")}
+                    onChange={handleChange('email')}
                     fullWidth
                     aria-describedby="component-error-text"
                   />
@@ -170,7 +206,7 @@ const Register = ({ history, register, callRegister }) => {
                     variant="outlined"
                     type="password"
                     value={values.password}
-                    onChange={handleChange("password")}
+                    onChange={handleChange('password')}
                     fullWidth
                     aria-describedby="component-error-text"
                   />
@@ -190,7 +226,7 @@ const Register = ({ history, register, callRegister }) => {
                     variant="outlined"
                     type="password"
                     value={values.confirm_password}
-                    onChange={handleChange("confirm_password")}
+                    onChange={handleChange('confirm_password')}
                     fullWidth
                     aria-describedby="component-error-text"
                   />
@@ -222,11 +258,11 @@ const Register = ({ history, register, callRegister }) => {
 Register.propTypes = {
   register: PropTypes.object.isRequired,
   callRegister: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => ({
-  register: state.register
+  register: state.register,
 });
 
 const mapDispatchToProps = dispatch =>

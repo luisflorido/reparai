@@ -1,14 +1,14 @@
-const { BrowserWindow, app, ipcMain, screen } = require("electron");
+const { BrowserWindow, app, ipcMain, screen, dialog } = require('electron');
 
-const path = require("path");
-const url = require("url");
+const path = require('path');
+const url = require('url');
 
 let mainWindow;
 
 const OPERATIONS = {
-  CHANGE_SIZE_SCREEN: "CHANGE_SIZE_SCREEN",
-  SHOW: "SHOW",
-  HIDE: "HIDE"
+  CHANGE_SIZE_SCREEN: 'CHANGE_SIZE_SCREEN',
+  SHOW: 'SHOW',
+  HIDE: 'HIDE',
 };
 
 const wpd = w => {
@@ -25,16 +25,16 @@ const createWindow = () => {
   const startUrl =
     process.env.ELECTRON_START_URL ||
     url.format({
-      pathname: path.join(__dirname, "/../build/index.html"),
-      protocol: "file:",
-      slashes: true
+      pathname: path.join(__dirname, '/../build/index.html'),
+      protocol: 'file:',
+      slashes: true,
     });
 
   mainWindow = new BrowserWindow({
     show: true,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
   });
 
   // protocol.registerHttpProtocol(PROTOCOL_CODE, (req, cb) => {
@@ -43,27 +43,27 @@ const createWindow = () => {
   //   mainWindow.loadURL(fullUrl);
   // });
 
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools();
   }
 
   mainWindow.loadURL(startUrl);
-  mainWindow.on("closed", () => {
+  mainWindow.on('closed', () => {
     mainWindow = null;
   });
 };
 
-app.on("ready", () => {
+app.on('ready', () => {
   createWindow();
 });
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-app.on("activate", () => {
+app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   }
@@ -71,16 +71,18 @@ app.on("activate", () => {
 
 let link;
 
-app.on("open-url", function(event, data) {
+app.on('open-url', function(event, data) {
   event.preventDefault();
   link = data;
   alert(link);
 });
 
-app.setAsDefaultProtocolClient("reparai");
+app.setAsDefaultProtocolClient('reparai');
 
 ipcMain.on(OPERATIONS.CHANGE_SIZE_SCREEN, (event, width, height) => {
-  mainWindow.setSize(wpd(width), hpd(height));
+  const newWidth = parseInt(wpd(width));
+  const newHeight = parseInt(hpd(height));
+  mainWindow.setSize(newWidth, newHeight);
   mainWindow.center();
 });
 

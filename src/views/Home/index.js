@@ -1,14 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
-import { connect } from "react-redux";
-import { compose, bindActionCreators } from "redux";
-import PropTypes from "prop-types";
-import { withRouter } from "react-router";
+import { connect } from 'react-redux';
+import { compose, bindActionCreators } from 'redux';
+import PropTypes from 'prop-types';
+import { withRouter } from 'react-router';
 
-import { Creators as LoginActions } from "store/ducks/login";
-
-import { OPERATIONS } from "store/sagas/entitiesType";
-const { ipcRenderer } = window.require("electron");
+import { OPERATIONS } from 'store/sagas/entitiesType';
+const { ipcRenderer } = window.require('electron');
 
 const Home = ({ login, history, loadAll }) => {
   const { error, data } = login;
@@ -19,10 +17,9 @@ const Home = ({ login, history, loadAll }) => {
 
   useEffect(() => {
     if (data === null) {
-      history.push("/login");
+      history.push('/login');
     } else {
-      loadAll();
-      history.push("/services");
+      history.push('/services');
     }
   }, [error, data]);
 
@@ -30,22 +27,19 @@ const Home = ({ login, history, loadAll }) => {
 };
 
 const mapStateToProps = state => ({
-  login: state.login
+  login: state.login,
 });
-
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(LoginActions, dispatch);
 
 Home.propTypes = {
   login: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  loadAll: PropTypes.func.isRequired
+  loadAll: PropTypes.func.isRequired,
 };
 
 export default compose(
   connect(
     mapStateToProps,
-    mapDispatchToProps
+    null
   ),
   withRouter
 )(Home);

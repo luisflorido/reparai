@@ -1,59 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import { connect } from "react-redux";
-import classNames from "classnames";
-import { compose, bindActionCreators } from "redux";
-import PropTypes from "prop-types";
-import { withRouter } from "react-router";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import Avatar from "@material-ui/core/Avatar";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import Box from "@material-ui/core/Box";
-import Divider from "@material-ui/core/Divider";
-import SendIcon from "@material-ui/icons/Send";
-import makeStyles from "@material-ui/styles/makeStyles";
-import { animateScroll } from "react-scroll";
-import moment from "moment/min/moment-with-locales";
-import { Formik } from "formik";
-import * as yup from "yup";
+import { connect } from 'react-redux';
+import classNames from 'classnames';
+import { compose, bindActionCreators } from 'redux';
+import PropTypes from 'prop-types';
+import { withRouter } from 'react-router';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import SendIcon from '@material-ui/icons/Send';
+import makeStyles from '@material-ui/styles/makeStyles';
+import { animateScroll } from 'react-scroll';
+import moment from 'moment/min/moment-with-locales';
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
-import { Creators as ServiceActions } from "store/ducks/service";
-import Loading from "components/Loading";
+import { Creators as ServiceActions } from 'store/ducks/service';
+import Loading from 'components/Loading';
 
-import { OPERATIONS } from "store/sagas/entitiesType";
-const { ipcRenderer } = window.require("electron");
+import { OPERATIONS } from 'store/sagas/entitiesType';
+const { ipcRenderer } = window.require('electron');
 
 const ServiceMessages = ({
   loading,
   getServiceById,
   service,
   match,
-  sendMessage
+  sendMessage,
 }) => {
   const [description, setDescription] = useState();
   const {
-    params: { id }
+    params: { id },
   } = match;
 
   useEffect(() => {
-    moment.locale("pt-br");
+    moment.locale('pt-br');
 
     const {
-      params: { id }
+      params: { id },
     } = match;
-
-    ipcRenderer.send(OPERATIONS.CHANGE_SIZE_SCREEN, 50, 80);
 
     if (id) {
       getServiceById({ id });
     }
-
-    return () => {
-      ipcRenderer.send(OPERATIONS.CHANGE_SIZE_SCREEN, 80, 80);
-    };
   }, []);
 
   useEffect(() => {
@@ -61,57 +55,62 @@ const ServiceMessages = ({
       animateScroll.scrollToBottom({
         delay: 200,
         duration: 800,
-        containerId: "chat"
+        containerId: 'chat',
       });
     }
   }, [service]);
 
   const useStyles = makeStyles(theme => ({
     root: {
-      padding: theme.spacing(3)
+      padding: theme.spacing(3),
     },
     gridPaper: {
-      display: "flex",
-      marginBottom: `${theme.spacing(1)}px`
+      display: 'flex',
+      marginBottom: `${theme.spacing(1)}px`,
     },
     paper: {
       padding: theme.spacing(2),
-      paddingRight: theme.spacing(4)
+      paddingRight: theme.spacing(4),
     },
     admin: {
-      marginRight: "auto"
+      marginRight: 'auto',
     },
     user: {
-      marginLeft: "auto"
+      marginLeft: 'auto',
     },
     title: {
       padding: theme.spacing(1),
-      margin: "0 auto",
-      marginBottom: theme.spacing(4)
+      margin: '0 auto',
+      marginBottom: theme.spacing(4),
     },
     textField: {
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1),
-      width: "100%"
+      width: '100%',
     },
     btn: {
       backgroundColor: theme.palette.primary.main,
-      height: "100%",
-      borderRadius: "10px"
+      height: '100%',
+      borderRadius: '10px',
     },
     send: {
-      marginTop: theme.spacing(1)
+      marginTop: theme.spacing(1),
     },
     divider: {
-      width: "100%"
+      width: '100%',
     },
     chat: {
-      overflowY: "auto",
-      height: "60vh"
+      overflowY: 'auto',
+      height: '60vh',
     },
     name: {
-      marginRight: theme.spacing(1)
-    }
+      marginRight: theme.spacing(1),
+    },
+    truncate: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      width: '11rem',
+    },
   }));
 
   const classes = useStyles();
@@ -155,11 +154,16 @@ const ServiceMessages = ({
                         </Grid>
                         <Grid item>
                           <Typography variant="caption">
-                            {moment(e.created_at).format("LLL")}
+                            {moment(e.created_at).format('LLL')}
                           </Typography>
                         </Grid>
                       </Grid>
-                      <Typography variant="subtitle2">{e.text}</Typography>
+                      <Typography
+                        variant="subtitle2"
+                        className={classes.truncate}
+                      >
+                        {e.text}
+                      </Typography>
                     </Grid>
                   </Grid>
                 </Paper>
@@ -209,7 +213,7 @@ const ServiceMessages = ({
 
 const mapStateToProps = state => ({
   loading: state.service.loading,
-  service: state.service.service
+  service: state.service.service,
 });
 
 const mapDispatchToProps = dispatch =>
@@ -220,11 +224,11 @@ ServiceMessages.propTypes = {
   getServiceById: PropTypes.func.isRequired,
   service: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  sendMessage: PropTypes.func.isRequired
+  sendMessage: PropTypes.func.isRequired,
 };
 
 ServiceMessages.defaultProps = {
-  loading: false
+  loading: false,
 };
 
 export default compose(
