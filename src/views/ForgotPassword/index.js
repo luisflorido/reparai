@@ -1,62 +1,63 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
-import { bindActionCreators, compose } from "redux";
-import { connect } from "react-redux";
-import { withRouter } from "react-router";
-import { Creators as ForgtoPasswordActions } from "store/ducks/forgotPassword";
-import PropTypes from "prop-types";
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { Creators as ForgtoPasswordActions } from 'store/ducks/forgotPassword';
+import PropTypes from 'prop-types';
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import Avatar from "@material-ui/core/Avatar";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import { Formik } from "formik";
-import * as Yup from "yup";
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import Link from '@material-ui/core/Link';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-import { OPERATIONS } from "store/sagas/entitiesType";
+import { OPERATIONS } from 'store/sagas/entitiesType';
 
-const { ipcRenderer } = window.require("electron");
+const { ipcRenderer } = window.require('electron');
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: "100vh"
+    height: '100vh',
   },
   image: {
-    backgroundImage: "url(https://source.unsplash.com/random)",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
-    backgroundPosition: "center"
+    backgroundImage: 'url(https://source.unsplash.com/random)',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
   },
   paperBackground: {
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
   },
   paper: {
     margin: theme.spacing(8, 4),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main
+    backgroundColor: theme.palette.primary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
+    margin: theme.spacing(3, 0, 2),
   },
   formControl: {
-    width: "100%"
-  }
+    width: '100%',
+  },
 }));
 
 const ForgotPassword = ({ history, forgotPassword, callForgotPassword }) => {
@@ -65,27 +66,20 @@ const ForgotPassword = ({ history, forgotPassword, callForgotPassword }) => {
 
   const schema = Yup.object().shape({
     email: Yup.string()
-      .email("Digite um email válido")
-      .required("Email necessário")
+      .email('Digite um email válido')
+      .required('Email necessário'),
   });
 
   const handleFormSubmit = values => {
     callForgotPassword(values);
   };
 
-  const { loading, error, errorStatus } = forgotPassword;
+  const { loading, error } = forgotPassword;
 
   useEffect(() => {
     if (!loading && error !== null) {
       if (!error) {
-        alert("Email enviado com sucesso!");
-        history.push("/login");
-      } else {
-        alert(
-          errorStatus === 404
-            ? "Usuário inválido."
-            : "Ocorreu um erro! Tente novamente mais tarde."
-        );
+        history.push('/login');
       }
     }
   }, [loading, error]);
@@ -112,7 +106,7 @@ const ForgotPassword = ({ history, forgotPassword, callForgotPassword }) => {
           <Formik
             className={classes.form}
             initialValues={{
-              email: "luiisflorido@gmail.com"
+              email: 'luiisflorido@gmail.com',
             }}
             validationSchema={schema}
             validateOnChange={false}
@@ -129,7 +123,7 @@ const ForgotPassword = ({ history, forgotPassword, callForgotPassword }) => {
                     id="component-error"
                     variant="outlined"
                     value={values.email}
-                    onChange={handleChange("email")}
+                    onChange={handleChange('email')}
                     fullWidth
                     aria-describedby="component-error-text"
                   />
@@ -151,6 +145,16 @@ const ForgotPassword = ({ history, forgotPassword, callForgotPassword }) => {
               </>
             )}
           </Formik>
+          <Grid container>
+            <Grid item xs>
+              <Link
+                onClick={() => history.push('/set-password')}
+                variant="body2"
+              >
+                Já possui um token?
+              </Link>
+            </Grid>
+          </Grid>
         </div>
       </Grid>
       <Grid item xs={false} sm={6} md={8} className={classes.image} />
@@ -161,11 +165,11 @@ const ForgotPassword = ({ history, forgotPassword, callForgotPassword }) => {
 ForgotPassword.propTypes = {
   forgotPassword: PropTypes.object.isRequired,
   callForgotPassword: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => ({
-  forgotPassword: state.forgotPassword
+  forgotPassword: state.forgotPassword,
 });
 
 const mapDispatchToProps = dispatch =>

@@ -3,10 +3,8 @@ import React, { useEffect } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Creators as LoginActions } from 'store/ducks/login';
+import { Creators as SetPasswordActions } from 'store/ducks/setPassword';
 import PropTypes from 'prop-types';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Grid from '@material-ui/core/Grid';
@@ -16,10 +14,12 @@ import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
 import Link from '@material-ui/core/Link';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 import { OPERATIONS } from 'store/sagas/entitiesType';
 
@@ -60,32 +60,23 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Login = ({ history, login, callLogin }) => {
+const SetPassword = ({ history, setPassword, callSetPassword }) => {
   const classes = useStyles();
   useEffect(() => ipcRenderer.send(OPERATIONS.SHOW), []);
 
   const schema = Yup.object().shape({
-    email: Yup.string()
-      .email('Digite um email válido')
-      .required('Email necessário'),
-    password: Yup.string()
-      .min(6, 'Senha precisa de 6 caracteres')
-      .required('Senha necessária'),
+    token: Yup.string().required('Token necessário'),
+    password: Yup.string().required('Senha necessária'),
+    password_confirmation: Yup.string()
+      .required('Confirmação de senha necessária')
+      .oneOf([Yup.ref('password'), null], 'Senhas não conferem.'),
   });
 
   const handleFormSubmit = values => {
-    callLogin(values);
+    callSetPassword(values);
   };
 
-  const { loading, error } = login;
-
-  useEffect(() => {
-    if (!loading && error !== null) {
-      if (!error) {
-        history.push('/services');
-      }
-    }
-  }, [loading, error]);
+  const { loading } = setPassword;
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -104,13 +95,14 @@ const Login = ({ history, login, callLogin }) => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Login
+            Setar senha
           </Typography>
           <Formik
             className={classes.form}
             initialValues={{
-              email: 'luiisflorido@gmail.com',
-              password: '123456ab',
+              token: '',
+              password: '',
+              password_confirmation: '',
             }}
             validationSchema={schema}
             validateOnChange={false}
@@ -120,19 +112,19 @@ const Login = ({ history, login, callLogin }) => {
               <>
                 <FormControl
                   className={classes.formControl}
-                  error={!!errors.email}
+                  error={!!errors.token}
                 >
-                  <InputLabel htmlFor="component-error">Email</InputLabel>
+                  <InputLabel htmlFor="component-error">Token</InputLabel>
                   <Input
                     id="component-error"
                     variant="outlined"
-                    value={values.email}
-                    onChange={handleChange('email')}
+                    value={values.token}
+                    onChange={handleChange('token')}
                     fullWidth
                     aria-describedby="component-error-text"
                   />
                   <FormHelperText id="component-error-text">
-                    {errors.email}
+                    {errors.token}
                   </FormHelperText>
                 </FormControl>
                 <FormControl
@@ -153,6 +145,26 @@ const Login = ({ history, login, callLogin }) => {
                     {errors.password}
                   </FormHelperText>
                 </FormControl>
+                <FormControl
+                  className={classes.formControl}
+                  error={!!errors.password_confirmation}
+                >
+                  <InputLabel htmlFor="component-error">
+                    Confirmação da senha
+                  </InputLabel>
+                  <Input
+                    id="component-error"
+                    variant="outlined"
+                    type="password"
+                    value={values.password_confirmation}
+                    onChange={handleChange('password_confirmation')}
+                    fullWidth
+                    aria-describedby="component-error-text"
+                  />
+                  <FormHelperText id="component-error-text">
+                    {errors.password_confirmation}
+                  </FormHelperText>
+                </FormControl>
                 <Button
                   type="submit"
                   fullWidth
@@ -170,15 +182,10 @@ const Login = ({ history, login, callLogin }) => {
           <Grid container>
             <Grid item xs>
               <Link
-                onClick={() => history.push('/forgot-password')}
+                onClick={() => history.push('/set-password')}
                 variant="body2"
               >
-                Esqueceu a senha?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link onClick={() => history.push('/register')} variant="body2">
-                Não tem uma conta?
+                Já possui um token?
               </Link>
             </Grid>
           </Grid>
@@ -189,18 +196,18 @@ const Login = ({ history, login, callLogin }) => {
   );
 };
 
-Login.propTypes = {
-  login: PropTypes.object.isRequired,
-  callLogin: PropTypes.func.isRequired,
+SetPassword.propTypes = {
+  setPassword: PropTypes.object.isRequired,
+  callSetPassword: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => ({
-  login: state.login,
+  setPassword: state.setPassword,
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators(LoginActions, dispatch);
+  bindActionCreators(SetPasswordActions, dispatch);
 
 export default compose(
   connect(
@@ -208,4 +215,4 @@ export default compose(
     mapDispatchToProps
   ),
   withRouter
-)(Login);
+)(SetPassword);

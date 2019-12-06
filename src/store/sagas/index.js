@@ -32,6 +32,10 @@ import {
   Creators as ServiceActions,
   Types as ServiceTypes,
 } from 'store/ducks/service';
+import {
+  Creators as SetPasswordActions,
+  Types as SetPasswordTypes,
+} from 'store/ducks/setPassword';
 
 function* login(action) {
   const { email, password } = action.payload;
@@ -357,6 +361,29 @@ function* deleteService(payload) {
   }
 }
 
+function* setPassword({ payload }) {
+  try {
+    const response = yield call(api.post, `/users/set-password`, payload);
+    const { status } = response;
+    if (status && status === 200) {
+      toastr.success('Sucesso', 'Senha alterada com sucesso.');
+      yield put(SetPasswordActions.setPasswordSuccess());
+      setTimeout(() => {
+        history.replace('/');
+        history.replace('/login');
+      }, 2500);
+    }
+  } catch (err) {
+    toastr.error(
+      'Erro',
+      err && err.response && err.response.status && err.response.status === 404
+        ? 'Token inválido.'
+        : 'Falha ao contactar os servidores.'
+    );
+    yield put(SetPasswordActions.setPasswordFail());
+  }
+}
+
 function* loadAllCategories() {
   try {
     const response = yield call(api.get, '/categories');
@@ -424,5 +451,6 @@ export default function* rootSaga() {
     takeLatest(ServiceTypes.ADD, addService),
     takeLatest(ServiceTypes.SEND_MESSAGE, sendMessage),
     takeLatest(ServiceTypes.DELETE, deleteService),
+    takeLatest(SetPasswordTypes.SET_PASSWORD, setPassword),
   ]);
 }

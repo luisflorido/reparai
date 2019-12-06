@@ -1,0 +1,11 @@
+version: "2.2"
+
+services:
+  api:
+    image: reparai-api
+  web:
+    build: .
+    ports:
+     - "3000:3000"
+    depends_on:
+     - api
