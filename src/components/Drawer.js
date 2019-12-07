@@ -13,6 +13,7 @@ import Logout from '@material-ui/icons/ExitToApp';
 import Assignment from '@material-ui/icons/Assignment';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import Grid from '@material-ui/core/Grid';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -61,6 +62,9 @@ const useStyles = makeStyles(theme => ({
   selected: {
     backgroundColor: theme.palette.background.default,
   },
+  font: {
+    fontFamily: 'Quillain',
+  },
 }));
 
 function ResponsiveDrawer(props) {
@@ -95,10 +99,30 @@ function ResponsiveDrawer(props) {
     return false;
   };
 
+  const getName = () => {
+    if (login) {
+      const parsed = JSON.parse(login);
+      const {
+        user: { first_name, last_name },
+      } = parsed;
+      return `${first_name} ${last_name}`;
+    }
+    return false;
+  };
+
   const drawer = (
     <div>
       <div className={classes.toolbar}>
-        <Typography variant="h4">Reparaí</Typography>
+        <Grid container>
+          <Grid item sm={12}>
+            <Typography variant="h4" align="center" className={classes.font}>
+              Reparaí
+            </Typography>
+          </Grid>
+          <Grid item sm={12}>
+            <Typography variant="body2">{getName()}</Typography>
+          </Grid>
+        </Grid>
       </div>
       <Divider />
       <List>

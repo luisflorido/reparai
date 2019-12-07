@@ -46,6 +46,7 @@ const useStyles = makeStyles(theme => ({
   },
   avatar: {
     margin: theme.spacing(1),
+    cursor: 'pointer',
     backgroundColor: theme.palette.primary.main,
   },
   form: {
@@ -91,7 +92,10 @@ const SetPassword = ({ history, setPassword, callSetPassword }) => {
         className={classes.paperBackground}
       >
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
+          <Avatar
+            onClick={() => history.push('/login')}
+            className={classes.avatar}
+          >
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
